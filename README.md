@@ -1,7 +1,7 @@
 # wifi-replicant
 
 ```
-AlphaRouter
+WiFi-Replicant - Wireless Range extending software
 Copyright (C) 2016 lp1.eu
 
 This program is free software: you can redistribute it and/or modify
