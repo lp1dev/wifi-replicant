@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import wifi
+from subprocess import call
 
 nic1="wlan0"
 nic2="wlan1"
@@ -8,10 +9,10 @@ cells=[]
 
 #
 id=None
-passphrase=""
+passphrase=None
 
 def write_conf(conf):
-    with open("hostapd.conf", "a+") as f:
+    with open("hostapd.conf", "w+") as f:
         f.write(conf)
 
 def make_conf():
@@ -20,7 +21,7 @@ def make_conf():
     conf += "interface=%s\n" %nic2
     conf += "ssid=%s\n" %cell.ssid
     conf += "channel=%i\n" %cell.channel
-    conf += "hw_mode=%s\n" %cell.mode
+    conf += "hw_mode=g\n"
     conf += "macaddr_acl=0\n"
     if cell.encrypted:
         conf += "auth_algs=1\n"
@@ -44,16 +45,19 @@ def connect():
         exit("Invalid id")
     cell = cells[id]
     scheme = wifi.Scheme.find(nic1, cell.ssid)
+    
+    if cell.encrypted:
+        print(cell.encryption_type, end='')
+        passphrase = input(" passphrase :")
+        print("passphrase:[%s]" %passphrase)
     if scheme is None:
         if cell.encrypted:
-            print(cell.encryption_type, end='')
-            passphrase = input(" passphrase :")
-            print("passphrase:[%s]" %passphrase)
             scheme = wifi.Scheme.for_cell(nic1, cell.ssid, cell, passphrase)
         else:
             scheme = wifi.Scheme.for_cell(nic1, cell.ssid, cell)
         scheme.save()
     scheme.activate()
+    scheme.delete()
     return
 
 def main():
@@ -65,6 +69,7 @@ def main():
         exit("Invalid value")
     connect()
     make_conf()
+    call(["hostapd", "-d", "hostpad.conf"])
     return 0
 
 if __name__ == "__main__":

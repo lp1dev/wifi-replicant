@@ -1,5 +1,10 @@
 # wifi-replicant
 
+## Requirements
+ - Python3.4
+ - hostapd 
+ - iptables
+
 ```
 WiFi-Replicant - Wireless Range extending software
 Copyright (C) 2016 lp1.eu
